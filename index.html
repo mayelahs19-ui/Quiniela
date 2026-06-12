@@ -380,7 +380,7 @@ async function actualizarResultados(){
   const btn=document.getElementById('btn-upd');if(!btn)return;
   btn.textContent='⏳ Consultando resultados...';btn.disabled=true;
   try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,tools:[{type:'web_search_20250305',name:'web_search'}],
         messages:[{role:'user',content:`Busca resultados actuales del Mundial FIFA 2026. Hoy: ${new Date().toLocaleDateString('es-MX')}. Dame solo JSON sin texto extra: [{"id":1,"g1":2,"g2":1}]. Solo partidos con resultado final. IDs: 1=MEX-RSA,2=KOR-CZE,3=MEX-KOR,4=CZE-RSA,5=MEX-CZE,6=RSA-KOR,7=CAN-BIH,8=QAT-SUI,9=CAN-QAT,10=SUI-BIH,11=CAN-SUI,12=BIH-QAT,13=BRA-MAR,14=HAI-SCO,15=BRA-HAI,16=SCO-MAR,17=BRA-SCO,18=MAR-HAI,19=USA-PAR,20=AUS-TUR,21=USA-AUS,22=TUR-PAR,23=USA-TUR,24=PAR-AUS,25=GER-CIV,26=ECU-CUW,27=GER-ECU,28=CIV-CUW,29=GER-CUW,30=ECU-CIV,31=NED-JPN,32=SWE-TUN,33=NED-SWE,34=JPN-TUN,35=NED-TUN,36=SWE-JPN,37=BEL-IRN,38=EGY-NZL,39=BEL-EGY,40=NZL-IRN,41=BEL-NZL,42=IRN-EGY,43=ESP-CPV,44=KSA-URU,45=ESP-KSA,46=URU-CPV,47=ESP-URU,48=CPV-KSA,49=FRA-SEN,50=NOR-IRQ,51=FRA-NOR,52=SEN-IRQ,53=FRA-IRQ,54=SEN-NOR,55=ARG-ALG,56=AUT-JOR,57=ARG-AUT,58=JOR-ALG,59=ARG-JOR,60=ALG-AUT,61=POR-UZB,62=COL-COD,63=POR-COL,64=COD-UZB,65=POR-COD,66=UZB-COL,67=ENG-CRO,68=GHA-PAN,69=ENG-GHA,70=PAN-CRO,71=ENG-PAN,72=GHA-CRO`}]})});
     const data=await resp.json();
