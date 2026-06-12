@@ -309,7 +309,11 @@ function renderPartidos(){
   const el=document.getElementById('fgrp');if(!el)return;
   const gs=['Todos','A','B','C','D','E','F','G','H','I','J','K','L'];
   el.innerHTML=gs.map(g=>`<button class="fb ${filtroG===g?'on':''}" onclick="setFG('${g}')">${g}</button>`).join('');
-  const fil=filtroG==='Todos'?partidos:partidos.filter(p=>p.g===filtroG);
+
+  // Ordenar por fecha
+  const dayNum = f => parseInt(f.replace('Jun ',''));
+  let fil = filtroG==='Todos' ? [...partidos] : partidos.filter(p=>p.g===filtroG);
+  fil.sort((a,b) => dayNum(a.f) - dayNum(b.f));
   const pl=document.getElementById('plist');if(!pl)return;
   pl.innerHTML=fil.map(p=>{
     const e1=eqI(p.e1),e2=eqI(p.e2),per1=perDe(p.e1),per2=perDe(p.e2);
