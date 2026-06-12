@@ -193,23 +193,31 @@ function perDe(id){for(const[p,eqs]of Object.entries(sorteo))if(eqs.includes(id)
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
 function hacerSorteo(){
-  const ninos=PERSONAS.filter(p=>NINOS.has(p));       // 8 niños
-  const adultos=shuffle(PERSONAS.filter(p=>!NINOS.has(p))); // 14 adultos mezclados
-  const ids=shuffle(EQ.map(e=>e.id));
-  sorteo={};
-  PERSONAS.forEach(p=>sorteo[p]=[]);
-  let idx=0;
-  // Niños: 2 equipos garantizados
-  ninos.forEach(n=>{sorteo[n].push(ids[idx++]);sorteo[n].push(ids[idx++]);});
-  // 4 niños al azar reciben el 3er equipo (prioridad niños)
-  const ninosSh=shuffle([...ninos]);
-  ninosSh.slice(0,4).forEach(n=>sorteo[n].push(ids[idx++]));
-  // Adultos: 2 equipos cada uno con los restantes
-  adultos.forEach(a=>{
-    sorteo[a].push(ids[idx++]);
-    if(idx<ids.length) sorteo[a].push(ids[idx++]);
-  });
-  localStorage.setItem(SK,JSON.stringify(sorteo));
+  // ── SORTEO OFICIAL FIJO ── 10 junio 2026 8:00pm ──
+  return {
+    "Papá":    ["NED","ALG"],
+    "Mamá":    ["SWE","JOR"],
+    "Yaya":    ["ESP","CPV"],
+    "Gaby":    ["KOR","TUR"],
+    "Gabo":    ["GHA","RSA"],
+    "Roberta": ["IRQ","PAR","COD"],
+    "Jacob":   ["KSA","SCO"],
+    "Dulce":   ["NOR","GER"],
+    "Eli":     ["TUN","CUW","COL"],
+    "Rafa":    ["AUT","MAR"],
+    "Agus":    ["NZL","IRN"],
+    "Mati":    ["FRA","CIV","USA"],
+    "Eye":     ["URU","UZB"],
+    "Nana":    ["ENG","CRO"],
+    "Juan":    ["CZE","SEN"],
+    "Jd":      ["JPN","MEX"],
+    "Titi":    ["EGY","HAI"],
+    "Sam":     ["CAN","SUI"],
+    "Caleb":   ["PAN","BIH"],
+    "Lobo":    ["BEL","ECU"],
+    "Clau":    ["QAT","POR"],
+    "Sofi":    ["ARG","AUS","BRA"]
+  };
 }
 
 function renderContador(){
@@ -382,14 +390,11 @@ async function actualizarResultados(){
   setTimeout(()=>{if(btn){btn.textContent='🔄 Actualizar resultados con IA';btn.disabled=false;}},3000);
 }
 
-// ── INICIO ──────────────────────────────────────
-const savedSorteo=localStorage.getItem(SK);
-if(savedSorteo){
-  sorteo=JSON.parse(savedSorteo);
-  renderApp();
-} else {
-  renderContador();
-}
+// ── INICIO — sorteo oficial fijo, siempre visible ──
+sorteo = hacerSorteo();
+const savedP = localStorage.getItem(PAK);
+if(savedP) partidos = JSON.parse(savedP);
+renderApp();
 </script>
 </body>
 </html>
