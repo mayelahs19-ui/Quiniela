@@ -277,6 +277,7 @@ function renderApp(){
     </div>
     <div id="tab-s" class="sec active"><div class="sgrid" id="sgrid"></div></div>
     <div id="tab-p" class="sec">
+      <button class="btn-upd" id="btn-upd" onclick="actualizarResultados()">🔄 Actualizar resultados</button>
       <div class="fbrow" id="fgrp"></div>
       <div id="plist"></div>
     </div>
@@ -375,22 +376,48 @@ function showTab(t){
   const btn=document.querySelector(`[onclick="showTab('${t}')"]`);if(btn)btn.classList.add('active');
 }
 
+// Mapeo de nombres openfootball → IDs de la quiniela
+const TEAM_MAP = {
+  "Mexico":"MEX","South Africa":"RSA","South Korea":"KOR","Czech Republic":"CZE",
+  "Canada":"CAN","Bosnia & Herzegovina":"BIH","Qatar":"QAT","Switzerland":"SUI",
+  "Brazil":"BRA","Morocco":"MAR","Haiti":"HAI","Scotland":"SCO",
+  "USA":"USA","Paraguay":"PAR","Australia":"AUS","Turkey":"TUR","Türkiye":"TUR",
+  "Germany":"GER","Curaçao":"CUW","Ivory Coast":"CIV","Ecuador":"ECU",
+  "Netherlands":"NED","Japan":"JPN","Sweden":"SWE","Tunisia":"TUN",
+  "Belgium":"BEL","Egypt":"EGY","Iran":"IRN","New Zealand":"NZL",
+  "Spain":"ESP","Cape Verde":"CPV","Saudi Arabia":"KSA","Uruguay":"URU",
+  "France":"FRA","Senegal":"SEN","Norway":"NOR","Iraq":"IRQ",
+  "Argentina":"ARG","Algeria":"ALG","Austria":"AUT","Jordan":"JOR",
+  "Portugal":"POR","Uzbekistan":"UZB","Colombia":"COL","DR Congo":"COD",
+  "England":"ENG","Croatia":"CRO","Ghana":"GHA","Panama":"PAN"
+};
+
 async function actualizarResultados(){
   const btn=document.getElementById('btn-upd');if(!btn)return;
-  btn.textContent='⏳ Consultando resultados...';btn.disabled=true;
+  btn.textContent='⏳ Buscando resultados...';btn.disabled=true;
   try{
-    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,
-        messages:[{role:'user',content:`Eres un asistente que conoce los resultados del Mundial FIFA 2026. Hoy es ${new Date().toLocaleDateString('es-MX')}. Dame SOLO un array JSON sin texto extra ni markdown con los partidos que ya tienen resultado final. Formato: [{"id":1,"g1":2,"g2":0}]. IDs: 1=MEX-RSA,2=KOR-CZE,3=MEX-KOR,4=CZE-RSA,5=MEX-CZE,6=RSA-KOR,7=CAN-BIH,8=QAT-SUI,9=CAN-QAT,10=SUI-BIH,11=CAN-SUI,12=BIH-QAT,13=BRA-MAR,14=HAI-SCO,15=BRA-HAI,16=SCO-MAR,17=BRA-SCO,18=MAR-HAI,19=USA-PAR,20=AUS-TUR,21=USA-AUS,22=TUR-PAR,23=USA-TUR,24=PAR-AUS,25=GER-CIV,26=ECU-CUW,27=GER-ECU,28=CIV-CUW,29=GER-CUW,30=ECU-CIV,31=NED-JPN,32=SWE-TUN,33=NED-SWE,34=JPN-TUN,35=NED-TUN,36=SWE-JPN,37=BEL-IRN,38=EGY-NZL,39=BEL-EGY,40=NZL-IRN,41=BEL-NZL,42=IRN-EGY,43=ESP-CPV,44=KSA-URU,45=ESP-KSA,46=URU-CPV,47=ESP-URU,48=CPV-KSA,49=FRA-SEN,50=NOR-IRQ,51=FRA-NOR,52=SEN-IRQ,53=FRA-IRQ,54=SEN-NOR,55=ARG-ALG,56=AUT-JOR,57=ARG-AUT,58=JOR-ALG,59=ARG-JOR,60=ALG-AUT,61=POR-UZB,62=COL-COD,63=POR-COL,64=COD-UZB,65=POR-COD,66=UZB-COL,67=ENG-CRO,68=GHA-PAN,69=ENG-GHA,70=PAN-CRO,71=ENG-PAN,72=GHA-CRO`}]})});
+    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({_proxy:'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json'})
+    });
     const data=await resp.json();
-    const txt=data.content.filter(c=>c.type==='text').map(c=>c.text).join('');
-    const res=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    res.forEach(r=>{const p=partidos.find(x=>x.id===r.id);if(p){p.g1=r.g1;p.g2=r.g2;}});
+    let actualizados=0;
+    data.matches.forEach(m=>{
+      if(m.score1===undefined||m.score1===null) return;
+      const t1=TEAM_MAP[m.team1],t2=TEAM_MAP[m.team2];
+      if(!t1||!t2) return;
+      const p=partidos.find(x=>x.e1===t1&&x.e2===t2);
+      if(p&&p.g1===null){p.g1=m.score1;p.g2=m.score2;actualizados++;}
+    });
     localStorage.setItem(PAK,JSON.stringify(partidos));
     renderPartidos();renderTabla();
-    btn.textContent='✅ Actualizado!';
-  }catch(e){btn.textContent='❌ Error — intenta de nuevo';}
-  setTimeout(()=>{if(btn){btn.textContent='🔄 Actualizar resultados con IA';btn.disabled=false;}},3000);
+    btn.textContent=actualizados>0?'✅ '+actualizados+' nuevo(s)!':'✅ Ya al día';
+  }catch(e){
+    btn.textContent='❌ Error — intenta de nuevo';
+    console.error(e);
+  }
+  setTimeout(()=>{if(btn){btn.textContent='🔄 Actualizar resultados';btn.disabled=false;}},3000);
 }
 
 // ── INICIO — sorteo oficial fijo, siempre visible ──
