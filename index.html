@@ -267,8 +267,6 @@ function renderSorteando(){
 }
 
 function renderApp(){
-  const saved_p=localStorage.getItem(PAK);
-  if(saved_p)partidos=JSON.parse(saved_p);
   document.getElementById('main').innerHTML=`
     <div class="tabs">
       <button class="tab active" onclick="showTab('s')">⚽ Sorteo</button>
@@ -392,25 +390,54 @@ const TEAM_MAP = {
   "England":"ENG","Croatia":"CRO","Ghana":"GHA","Panama":"PAN"
 };
 
+async function cargarResultadosKV(){
+  try{
+    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev/kv',{method:'GET'});
+    const kv=await resp.json();
+    Object.entries(kv).forEach(([id,marcador])=>{
+      const p=partidos.find(x=>x.id===parseInt(id));
+      if(p){p.g1=marcador[0];p.g2=marcador[1];}
+    });
+  }catch(e){console.error('Error cargando KV:',e);}
+}
+
+async function guardarResultadosKV(){
+  const obj={};
+  partidos.forEach(p=>{if(p.g1!==null&&p.g2!==null)obj[p.id]=[p.g1,p.g2];});
+  try{
+    await fetch('https://quiniela-proxy.mayelahs19.workers.dev/kv',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(obj)
+    });
+  }catch(e){console.error('Error guardando KV:',e);}
+}
+
 async function actualizarResultados(){
   const btn=document.getElementById('btn-upd');if(!btn)return;
   btn.textContent='⏳ Buscando resultados...';btn.disabled=true;
   try{
-    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev',{
+    // 1. Cargar lo que ya hay guardado en KV (por si otro dispositivo ya actualizó)
+    await cargarResultadosKV();
+    // 2. Buscar nuevos resultados en openfootball vía proxy
+    const resp=await fetch('https://quiniela-proxy.mayelahs19.workers.dev/proxy',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_proxy:'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json'})
+      body:JSON.stringify({url:'https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json'})
     });
     const data=await resp.json();
     let actualizados=0;
-    data.matches.forEach(m=>{
-      if(m.score1===undefined||m.score1===null) return;
-      const t1=TEAM_MAP[m.team1],t2=TEAM_MAP[m.team2];
-      if(!t1||!t2) return;
-      const p=partidos.find(x=>x.e1===t1&&x.e2===t2);
-      if(p&&p.g1===null){p.g1=m.score1;p.g2=m.score2;actualizados++;}
-    });
-    localStorage.setItem(PAK,JSON.stringify(partidos));
+    if(data.matches){
+      data.matches.forEach(m=>{
+        if(m.score1===undefined||m.score1===null) return;
+        const t1=TEAM_MAP[m.team1],t2=TEAM_MAP[m.team2];
+        if(!t1||!t2) return;
+        const p=partidos.find(x=>x.e1===t1&&x.e2===t2);
+        if(p&&p.g1===null){p.g1=m.score1;p.g2=m.score2;actualizados++;}
+      });
+    }
+    // 3. Guardar todo en KV para que todos lo vean
+    if(actualizados>0) await guardarResultadosKV();
     renderPartidos();renderTabla();
     btn.textContent=actualizados>0?'✅ '+actualizados+' nuevo(s)!':'✅ Ya al día';
   }catch(e){
@@ -420,11 +447,12 @@ async function actualizarResultados(){
   setTimeout(()=>{if(btn){btn.textContent='🔄 Actualizar resultados';btn.disabled=false;}},3000);
 }
 
-// ── INICIO — sorteo oficial fijo, siempre visible ──
+// ── INICIO — sorteo oficial fijo + resultados desde KV centralizado ──
 sorteo = hacerSorteo();
-const savedP = localStorage.getItem(PAK);
-if(savedP) partidos = JSON.parse(savedP);
-renderApp();
+(async()=>{
+  await cargarResultadosKV();
+  renderApp();
+})();
 </script>
 </body>
 </html>
