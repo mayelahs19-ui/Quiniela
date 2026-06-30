@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quiniela Familia Hernandez Sanchez 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:#06123a;min-height:100vh;overflow-x:hidden;}
+
+.qhdr{position:relative;background:#0a1f6e;padding:16px 16px 12px;text-align:center;overflow:hidden;}
+.qhdr::before{content:'⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽';position:absolute;top:2px;left:0;right:0;font-size:9px;letter-spacing:6px;opacity:.2;color:#fff;}
+.qhdr::after{content:'⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽ ★ ⚽';position:absolute;bottom:2px;left:0;right:0;font-size:9px;letter-spacing:6px;opacity:.2;color:#fff;}
+.qhdr-ico{font-size:20px;margin-bottom:5px;position:relative;}
+.qhdr h1{font-family:'Fredoka One',cursive;font-size:clamp(13px,3.5vw,17px);color:#FFD700;position:relative;line-height:1.3;}
+.qhdr p{font-size:10px;color:rgba(255,255,255,.6);margin-top:3px;position:relative;}
+
+.tabs{display:flex;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.1);}
+.tab{flex:1;padding:10px 4px;font-size:11px;font-weight:700;text-align:center;cursor:pointer;border:none;background:transparent;color:rgba(255,255,255,.5);border-bottom:2px solid transparent;white-space:nowrap;}
+.tab.active{color:#FFD700;border-bottom-color:#FFD700;}
+.sec{display:none;padding:12px 12px 80px;}
+.sec.active{display:block;}
+
+/* SORTEO */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.scard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:9px 10px;}
+.scard.nino{border-left:3px solid #f5a623;}
+.sname{font-weight:800;font-size:13px;color:#fff;display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-bottom:4px;}
+.ntag{font-size:9px;background:rgba(245,166,35,.25);color:#f5a623;border-radius:3px;padding:1px 5px;font-weight:700;}
+.x3tag{font-size:9px;background:rgba(74,222,128,.2);color:#4ade80;border-radius:3px;padding:1px 5px;font-weight:700;}
+.seqs{font-size:10px;color:rgba(255,255,255,.6);line-height:1.7;}
+.etag{display:inline-block;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border-radius:4px;padding:1px 6px;font-size:10px;margin:1px 1px 1px 0;}
+
+/* PARTIDOS */
+.fbrow{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px;}
+.fb{font-size:10px;padding:5px 9px;border:1px solid rgba(255,255,255,.2);border-radius:6px;cursor:pointer;background:rgba(255,255,255,.05);color:rgba(255,255,255,.6);}
+.fb.on{background:#FFD700;color:#0a1f6e;border-color:#FFD700;font-weight:800;}
+.fecha-sep{font-size:11px;font-weight:700;color:rgba(255,255,255,.4);padding:8px 0 4px;text-transform:uppercase;letter-spacing:1px;}
+.pcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:11px;margin-bottom:8px;}
+.pfecha{font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px;display:flex;justify-content:space-between;}
+.phora{font-size:10px;color:#FFD700;font-weight:700;}
+.peqs{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:6px;}
+.eblk{text-align:center;flex:1;}
+.eflag{font-size:22px;display:block;}
+.ename{font-size:10px;font-weight:700;color:#fff;margin-top:2px;line-height:1.2;}
+.epersona{font-size:10px;color:rgba(255,255,255,.4);}
+.epersona.tiene{color:#4ade80;font-weight:700;}
+.marcador{font-family:'Fredoka One',cursive;font-size:24px;color:#FFD700;min-width:56px;text-align:center;}
+.rbadge{text-align:center;font-size:11px;padding:4px 10px;border-radius:6px;margin-top:3px;font-weight:700;}
+.rv{background:rgba(74,222,128,.2);color:#4ade80;}
+.rem{background:rgba(255,213,0,.15);color:#FFD700;}
+.rp{background:rgba(255,255,255,.07);color:rgba(255,255,255,.4);}
+.pesos{display:flex;justify-content:space-between;font-size:11px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.08);}
+.pg{color:#4ade80;font-weight:700;}
+.pp2{color:#f87171;font-weight:700;}
+
+/* TABLA */
+.thdr{display:grid;grid-template-columns:24px 1fr 34px 34px 54px;gap:3px;padding:6px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,.4);border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:8px;}
+.trow{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;margin-bottom:7px;}
+.trow.gana{border-left:3px solid #4ade80;background:rgba(74,222,128,.07);}
+.trow.perd{border-left:3px solid #f87171;background:rgba(248,113,113,.07);}
+.trow-top{display:grid;grid-template-columns:24px 1fr 34px 34px 54px;gap:3px;align-items:center;margin-bottom:8px;}
+.pbadge{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.1);font-size:10px;font-weight:700;text-align:center;line-height:20px;color:rgba(255,255,255,.6);}
+.p1{background:#FFD700;color:#5a4000;}.p2{background:#C0C0C0;color:#333;}.p3{background:#CD7F32;color:#fff;}
+.tname{font-size:13px;font-weight:800;color:#fff;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.sp2{color:#4ade80;font-weight:800;text-align:right;font-size:12px;}
+.sn3{color:#f87171;font-weight:800;text-align:right;font-size:12px;}
+.eq-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.eq-chip{display:inline-flex;align-items:center;gap:3px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:2px 8px;font-size:10px;color:rgba(255,255,255,.65);}
+
+.ley{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(6,18,58,.97);backdrop-filter:blur(16px);border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:center;gap:14px;padding:10px 16px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.6);}
+.ld{width:13px;height:13px;border-radius:4px;flex-shrink:0;}
+
+.loading{padding:40px;text-align:center;color:rgba(255,255,255,.4);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="qhdr">
+  <div class="qhdr-ico">🏆⚽🌍⚽🏆</div>
+  <h1>Quiniela Familia Hernandez Sanchez 2026</h1>
+  <p>22 participantes · $100 entrada · $10 por partido · FIFA World Cup 2026</p>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('s')">⚽ Sorteo</button>
+  <button class="tab" onclick="showTab('p')">🗓 Grupos</button>
+  <button class="tab" onclick="showTab('d')">🏟 16avos</button>
+  <button class="tab" onclick="showTab('t')">🏆 Tabla</button>
+</div>
+<div id="tab-s" class="sec active"><div class="sgrid" id="sgrid"></div></div>
+<div id="tab-p" class="sec">
+  <div class="fbrow" id="fgrp"></div>
+  <div id="plist"><div class="loading">Cargando resultados...</div></div>
+</div>
+<div id="tab-d" class="sec">
+  <div id="dlist"><div class="loading">Cargando dieciseisavos...</div></div>
+</div>
+<div id="tab-t" class="sec">
+  <div class="thdr"><span>#</span><span>Nombre</span><span style="text-align:center">V</span><span style="text-align:center">D</span><span style="text-align:right">Saldo</span></div>
+  <div id="tbody"></div>
+</div>
+<div class="ley">
+  <div class="li"><div class="ld" style="background:#f5a623"></div>Niño</div>
+  <div class="li"><div class="ld" style="background:#4ade80"></div>3 equipos</div>
+  <div class="li"><div class="ld" style="background:#4ade80;border-radius:50%"></div>Ganando</div>
+  <div class="li"><div class="ld" style="background:#f87171;border-radius:50%"></div>Perdiendo</div>
+</div>
+
+<script>
+const NINOS=new Set(["Gabo","Roberta","Jacob","Eli","Mati","Jd","Caleb","Sofi"]);
+const PERSONAS=["Papá","Mamá","Yaya","Gaby","Gabo","Roberta","Jacob","Dulce","Eli","Rafa","Agus","Mati","Eye","Nana","Juan","Jd","Titi","Sam","Caleb","Lobo","Clau","Sofi"];
+const EQ=[
+  {id:"MEX",n:"México",flag:"🇲🇽",g:"A"},{id:"RSA",n:"Sudáfrica",flag:"🇿🇦",g:"A"},
+  {id:"KOR",n:"Corea del Sur",flag:"🇰🇷",g:"A"},{id:"CZE",n:"Chequia",flag:"🇨🇿",g:"A"},
+  {id:"CAN",n:"Canadá",flag:"🇨🇦",g:"B"},{id:"SUI",n:"Suiza",flag:"🇨🇭",g:"B"},
+  {id:"QAT",n:"Qatar",flag:"🇶🇦",g:"B"},{id:"BIH",n:"Bosnia",flag:"🇧🇦",g:"B"},
+  {id:"BRA",n:"Brasil",flag:"🇧🇷",g:"C"},{id:"MAR",n:"Marruecos",flag:"🇲🇦",g:"C"},
+  {id:"HAI",n:"Haití",flag:"🇭🇹",g:"C"},{id:"SCO",n:"Escocia",flag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",g:"C"},
+  {id:"USA",n:"Estados Unidos",flag:"🇺🇸",g:"D"},{id:"PAR",n:"Paraguay",flag:"🇵🇾",g:"D"},
+  {id:"AUS",n:"Australia",flag:"🇦🇺",g:"D"},{id:"TUR",n:"Turkiye",flag:"🇹🇷",g:"D"},
+  {id:"GER",n:"Alemania",flag:"🇩🇪",g:"E"},{id:"ECU",n:"Ecuador",flag:"🇪🇨",g:"E"},
+  {id:"CIV",n:"Costa de Marfil",flag:"🇨🇮",g:"E"},{id:"CUW",n:"Curazao",flag:"🇨🇼",g:"E"},
+  {id:"NED",n:"Países Bajos",flag:"🇳🇱",g:"F"},{id:"JPN",n:"Japón",flag:"🇯🇵",g:"F"},
+  {id:"SWE",n:"Suecia",flag:"🇸🇪",g:"F"},{id:"TUN",n:"Túnez",flag:"🇹🇳",g:"F"},
+  {id:"BEL",n:"Bélgica",flag:"🇧🇪",g:"G"},{id:"EGY",n:"Egipto",flag:"🇪🇬",g:"G"},
+  {id:"IRN",n:"Irán",flag:"🇮🇷",g:"G"},{id:"NZL",n:"Nueva Zelanda",flag:"🇳🇿",g:"G"},
+  {id:"ESP",n:"España",flag:"🇪🇸",g:"H"},{id:"CPV",n:"Cabo Verde",flag:"🇨🇻",g:"H"},
+  {id:"KSA",n:"Arabia Saudita",flag:"🇸🇦",g:"H"},{id:"URU",n:"Uruguay",flag:"🇺🇾",g:"H"},
+  {id:"FRA",n:"Francia",flag:"🇫🇷",g:"I"},{id:"SEN",n:"Senegal",flag:"🇸🇳",g:"I"},
+  {id:"NOR",n:"Noruega",flag:"🇳🇴",g:"I"},{id:"IRQ",n:"Iraq",flag:"🇮🇶",g:"I"},
+  {id:"ARG",n:"Argentina",flag:"🇦🇷",g:"J"},{id:"ALG",n:"Argelia",flag:"🇩🇿",g:"J"},
+  {id:"AUT",n:"Austria",flag:"🇦🇹",g:"J"},{id:"JOR",n:"Jordania",flag:"🇯🇴",g:"J"},
+  {id:"POR",n:"Portugal",flag:"🇵🇹",g:"K"},{id:"UZB",n:"Uzbekistán",flag:"🇺🇿",g:"K"},
+  {id:"COL",n:"Colombia",flag:"🇨🇴",g:"K"},{id:"COD",n:"RD Congo",flag:"🇨🇩",g:"K"},
+  {id:"ENG",n:"Inglaterra",flag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",g:"L"},{id:"CRO",n:"Croacia",flag:"🇭🇷",g:"L"},
+  {id:"GHA",n:"Ghana",flag:"🇬🇭",g:"L"},{id:"PAN",n:"Panamá",flag:"🇵🇦",g:"L"},
+];
+
+// Partidos con horario CDMX y ordenados cronológicamente
+const PB=[
+  {id:1, f:"Jun 11",h:"13:00",e1:"MEX",e2:"RSA",g:"A",g1:null,g2:null},
+  {id:2, f:"Jun 11",h:"20:00",e1:"KOR",e2:"CZE",g:"A",g1:null,g2:null},
+  {id:7, f:"Jun 12",h:"13:00",e1:"CAN",e2:"BIH",g:"B",g1:null,g2:null},
+  {id:19,f:"Jun 12",h:"19:00",e1:"USA",e2:"PAR",g:"D",g1:null,g2:null},
+  {id:8, f:"Jun 13",h:"13:00",e1:"QAT",e2:"SUI",g:"B",g1:null,g2:null},
+  {id:13,f:"Jun 13",h:"13:00",e1:"BRA",e2:"MAR",g:"C",g1:null,g2:null},
+  {id:14,f:"Jun 13",h:"19:00",e1:"HAI",e2:"SCO",g:"C",g1:null,g2:null},
+  {id:20,f:"Jun 13",h:"22:00",e1:"AUS",e2:"TUR",g:"D",g1:null,g2:null},
+  {id:25,f:"Jun 14",h:"11:00",e1:"GER",e2:"CUW",g:"E",g1:null,g2:null},
+  {id:31,f:"Jun 14",h:"14:00",e1:"NED",e2:"JPN",g:"F",g1:null,g2:null},
+  {id:26,f:"Jun 14",h:"17:00",e1:"CIV",e2:"ECU",g:"E",g1:null,g2:null},
+  {id:32,f:"Jun 14",h:"20:00",e1:"SWE",e2:"TUN",g:"F",g1:null,g2:null},
+  {id:43,f:"Jun 15",h:"10:00",e1:"ESP",e2:"CPV",g:"H",g1:null,g2:null},
+  {id:37,f:"Jun 15",h:"13:00",e1:"BEL",e2:"EGY",g:"G",g1:null,g2:null},
+  {id:44,f:"Jun 15",h:"16:00",e1:"KSA",e2:"URU",g:"H",g1:null,g2:null},
+  {id:38,f:"Jun 15",h:"19:00",e1:"IRN",e2:"NZL",g:"G",g1:null,g2:null},
+  {id:49,f:"Jun 16",h:"13:00",e1:"FRA",e2:"SEN",g:"I",g1:null,g2:null},
+  {id:50,f:"Jun 16",h:"16:00",e1:"IRQ",e2:"NOR",g:"I",g1:null,g2:null},
+  {id:55,f:"Jun 16",h:"19:00",e1:"ARG",e2:"ALG",g:"J",g1:null,g2:null},
+  {id:56,f:"Jun 16",h:"22:00",e1:"AUT",e2:"JOR",g:"J",g1:null,g2:null},
+  {id:61,f:"Jun 17",h:"11:00",e1:"POR",e2:"COD",g:"K",g1:null,g2:null},
+  {id:67,f:"Jun 17",h:"14:00",e1:"ENG",e2:"CRO",g:"L",g1:null,g2:null},
+  {id:68,f:"Jun 17",h:"17:00",e1:"GHA",e2:"PAN",g:"L",g1:null,g2:null},
+  {id:62,f:"Jun 17",h:"20:00",e1:"UZB",e2:"COL",g:"K",g1:null,g2:null},
+  {id:4, f:"Jun 18",h:"10:00",e1:"CZE",e2:"RSA",g:"A",g1:null,g2:null},
+  {id:9, f:"Jun 18",h:"13:00",e1:"SUI",e2:"BIH",g:"B",g1:null,g2:null},
+  {id:10,f:"Jun 18",h:"16:00",e1:"CAN",e2:"QAT",g:"B",g1:null,g2:null},
+  {id:3, f:"Jun 18",h:"19:00",e1:"MEX",e2:"KOR",g:"A",g1:null,g2:null},
+  {id:21,f:"Jun 19",h:"13:00",e1:"USA",e2:"AUS",g:"D",g1:null,g2:null},
+  {id:15,f:"Jun 19",h:"16:00",e1:"SCO",e2:"MAR",g:"C",g1:null,g2:null},
+  {id:16,f:"Jun 19",h:"19:00",e1:"BRA",e2:"HAI",g:"C",g1:null,g2:null},
+  {id:22,f:"Jun 19",h:"22:00",e1:"TUR",e2:"PAR",g:"D",g1:null,g2:null},
+  {id:33,f:"Jun 20",h:"11:00",e1:"NED",e2:"SWE",g:"F",g1:null,g2:null},
+  {id:27,f:"Jun 20",h:"14:00",e1:"GER",e2:"CIV",g:"E",g1:null,g2:null},
+  {id:28,f:"Jun 20",h:"18:00",e1:"ECU",e2:"CUW",g:"E",g1:null,g2:null},
+  {id:34,f:"Jun 20",h:"22:00",e1:"TUN",e2:"JPN",g:"F",g1:null,g2:null},
+  {id:45,f:"Jun 21",h:"10:00",e1:"ESP",e2:"KSA",g:"H",g1:null,g2:null},
+  {id:39,f:"Jun 21",h:"13:00",e1:"BEL",e2:"IRN",g:"G",g1:null,g2:null},
+  {id:46,f:"Jun 21",h:"16:00",e1:"URU",e2:"CPV",g:"H",g1:null,g2:null},
+  {id:40,f:"Jun 21",h:"19:00",e1:"NZL",e2:"EGY",g:"G",g1:null,g2:null},
+  {id:57,f:"Jun 22",h:"11:00",e1:"ARG",e2:"AUT",g:"J",g1:null,g2:null},
+  {id:51,f:"Jun 22",h:"15:00",e1:"FRA",e2:"IRQ",g:"I",g1:null,g2:null},
+  {id:52,f:"Jun 22",h:"18:00",e1:"NOR",e2:"SEN",g:"I",g1:null,g2:null},
+  {id:58,f:"Jun 22",h:"21:00",e1:"JOR",e2:"ALG",g:"J",g1:null,g2:null},
+  {id:63,f:"Jun 23",h:"11:00",e1:"POR",e2:"UZB",g:"K",g1:null,g2:null},
+  {id:69,f:"Jun 23",h:"14:00",e1:"ENG",e2:"GHA",g:"L",g1:null,g2:null},
+  {id:70,f:"Jun 23",h:"17:00",e1:"PAN",e2:"CRO",g:"L",g1:null,g2:null},
+  {id:64,f:"Jun 23",h:"20:00",e1:"COL",e2:"COD",g:"K",g1:null,g2:null},
+  {id:5, f:"Jun 24",h:"13:00",e1:"RSA",e2:"KOR",g:"A",g1:null,g2:null},
+  {id:17,f:"Jun 24",h:"13:00",e1:"SCO",e2:"BRA",g:"C",g1:null,g2:null},
+  {id:6, f:"Jun 24",h:"19:00",e1:"CZE",e2:"MEX",g:"A",g1:null,g2:null},
+  {id:18,f:"Jun 24",h:"19:00",e1:"MAR",e2:"HAI",g:"C",g1:null,g2:null},
+  {id:11,f:"Jun 24",h:"13:00",e1:"SUI",e2:"CAN",g:"B",g1:null,g2:null},
+  {id:12,f:"Jun 24",h:"13:00",e1:"BIH",e2:"QAT",g:"B",g1:null,g2:null},
+  {id:29,f:"Jun 25",h:"14:00",e1:"CUW",e2:"CIV",g:"E",g1:null,g2:null},
+  {id:30,f:"Jun 25",h:"14:00",e1:"ECU",e2:"GER",g:"E",g1:null,g2:null},
+  {id:35,f:"Jun 25",h:"17:00",e1:"JPN",e2:"SWE",g:"F",g1:null,g2:null},
+  {id:36,f:"Jun 25",h:"17:00",e1:"TUN",e2:"NED",g:"F",g1:null,g2:null},
+  {id:23,f:"Jun 25",h:"20:00",e1:"TUR",e2:"USA",g:"D",g1:null,g2:null},
+  {id:24,f:"Jun 25",h:"20:00",e1:"PAR",e2:"AUS",g:"D",g1:null,g2:null},
+  {id:53,f:"Jun 26",h:"13:00",e1:"NOR",e2:"FRA",g:"I",g1:null,g2:null},
+  {id:54,f:"Jun 26",h:"13:00",e1:"SEN",e2:"IRQ",g:"I",g1:null,g2:null},
+  {id:47,f:"Jun 26",h:"16:00",e1:"CPV",e2:"KSA",g:"H",g1:null,g2:null},
+  {id:48,f:"Jun 26",h:"16:00",e1:"URU",e2:"ESP",g:"H",g1:null,g2:null},
+  {id:41,f:"Jun 26",h:"19:00",e1:"EGY",e2:"IRN",g:"G",g1:null,g2:null},
+  {id:42,f:"Jun 26",h:"19:00",e1:"NZL",e2:"BEL",g:"G",g1:null,g2:null},
+  {id:71,f:"Jun 27",h:"15:00",e1:"PAN",e2:"ENG",g:"L",g1:null,g2:null},
+  {id:72,f:"Jun 27",h:"15:00",e1:"CRO",e2:"GHA",g:"L",g1:null,g2:null},
+  {id:65,f:"Jun 27",h:"17:30",e1:"COL",e2:"POR",g:"K",g1:null,g2:null},
+  {id:66,f:"Jun 27",h:"17:30",e1:"COD",e2:"UZB",g:"K",g1:null,g2:null},
+  {id:59,f:"Jun 27",h:"20:00",e1:"ALG",e2:"AUT",g:"J",g1:null,g2:null},
+  {id:60,f:"Jun 27",h:"20:00",e1:"JOR",e2:"ARG",g:"J",g1:null,g2:null},
+];
+
+// ── DIECISEISAVOS DE FINAL — 28 jun al 3 jul, horarios CDMX ──
+const D16=[
+  {id:73,f:"Jun 28",h:"13:00",e1:"CAN",e2:"RSA",g1:1,g2:0},
+  {id:76,f:"Jun 29",h:"11:00",e1:"BRA",e2:"JPN",g1:null,g2:null},
+  {id:74,f:"Jun 29",h:"15:30",e1:"GER",e2:"PAR",g1:null,g2:null},
+  {id:75,f:"Jun 29",h:"20:00",e1:"NED",e2:"MAR",g1:null,g2:null},
+  {id:78,f:"Jun 30",h:"12:00",e1:"CIV",e2:"NOR",g1:null,g2:null},
+  {id:77,f:"Jun 30",h:"16:00",e1:"FRA",e2:"SWE",g1:null,g2:null},
+  {id:79,f:"Jun 30",h:"20:00",e1:"MEX",e2:"ECU",g1:null,g2:null},
+  {id:80,f:"Jul 1", h:"11:00",e1:"ENG",e2:"COD",g1:null,g2:null},
+  {id:84,f:"Jul 2", h:"14:00",e1:"ESP",e2:"AUT",g1:null,g2:null},
+  {id:82,f:"Jul 2", h:"15:00",e1:"BEL",e2:"SEN",g1:null,g2:null},
+  {id:83,f:"Jul 2", h:"18:00",e1:"POR",e2:"CRO",g1:null,g2:null},
+  {id:81,f:"Jul 2", h:"19:00",e1:"USA",e2:"BIH",g1:null,g2:null},
+  {id:85,f:"Jul 2", h:"22:00",e1:"SUI",e2:"ALG",g1:null,g2:null},
+  {id:88,f:"Jul 3", h:"13:00",e1:"AUS",e2:"EGY",g1:null,g2:null},
+  {id:86,f:"Jul 3", h:"17:00",e1:"ARG",e2:"CPV",g1:null,g2:null},
+  {id:87,f:"Jul 3", h:"20:30",e1:"COL",e2:"GHA",g1:null,g2:null},
+];
+
+const WORKER = 'https://quiniela-proxy.mayelahs19.workers.dev/kv';
+
+const SORTEO = {
+  "Papá":["NED","ALG"],"Mamá":["SWE","JOR"],"Yaya":["ESP","CPV"],
+  "Gaby":["KOR","TUR"],"Gabo":["GHA","RSA"],"Roberta":["IRQ","PAR","COD"],
+  "Jacob":["KSA","SCO"],"Dulce":["NOR","GER"],"Eli":["TUN","CUW","COL"],
+  "Rafa":["AUT","MAR"],"Agus":["NZL","IRN"],"Mati":["FRA","CIV","USA"],
+  "Eye":["URU","UZB"],"Nana":["ENG","CRO"],"Juan":["CZE","SEN"],
+  "Jd":["JPN","MEX"],"Titi":["EGY","HAI"],"Sam":["CAN","SUI"],
+  "Caleb":["PAN","BIH"],"Lobo":["BEL","ECU"],"Clau":["QAT","POR"],
+  "Sofi":["ARG","AUS","BRA"]
+};
+
+let partidos = JSON.parse(JSON.stringify(PB));
+let filtroG = 'Todos';
+
+function eqI(id){return EQ.find(e=>e.id===id)||{flag:'',n:id};}
+function perDe(id){
+  for(const[p,eqs]of Object.entries(SORTEO))if(eqs.includes(id))return p;
+  return null;
+}
+
+function renderSorteo(){
+  const g=document.getElementById('sgrid');if(!g)return;
+  g.innerHTML=PERSONAS.map(p=>{
+    const esN=NINOS.has(p),eqs=SORTEO[p]||[],esTres=eqs.length===3;
+    const tags=eqs.map(id=>{const eq=eqI(id);return`<span class="etag">${eq.flag} ${eq.n}</span>`;}).join('');
+    return`<div class="scard ${esN?'nino':''}">
+      <div class="sname">${p}${esN?'<span class="ntag">niño</span>':''}${esTres?'<span class="x3tag">✨x3</span>':''}</div>
+      <div class="seqs">${tags||'—'}</div></div>`;
+  }).join('');
+}
+
+function renderPartidos(){
+  const el=document.getElementById('fgrp');if(!el)return;
+  const gs=['Todos','A','B','C','D','E','F','G','H','I','J','K','L'];
+  el.innerHTML=gs.map(g=>`<button class="fb ${filtroG===g?'on':''}" onclick="setFG('${g}')">${g}</button>`).join('');
+  const fil=filtroG==='Todos'?partidos:partidos.filter(p=>p.g===filtroG);
+  const pl=document.getElementById('plist');if(!pl)return;
+
+  // Agrupar por fecha
+  const porFecha={};
+  fil.forEach(p=>{
+    if(!porFecha[p.f])porFecha[p.f]=[];
+    porFecha[p.f].push(p);
+  });
+
+  let html='';
+  Object.entries(porFecha).forEach(([fecha,ps])=>{
+    html+=`<div class="fecha-sep">${fecha}</div>`;
+    ps.forEach(p=>{
+      const e1=eqI(p.e1),e2=eqI(p.e2),per1=perDe(p.e1),per2=perDe(p.e2);
+      const j=p.g1!==null&&p.g2!==null;
+      let rb='',ph='';
+      if(j){
+        const a=parseInt(p.g1),b=parseInt(p.g2);
+        if(a>b){rb=`<div class="rbadge rv">✅ ${e1.n} gana</div>`;if(per1||per2)ph=`<div class="pesos">${per1?`<span class="pg">+$10 ${per1}</span>`:'<span></span>'}${per2?`<span class="pp2">-$10 ${per2}</span>`:'<span></span>'}</div>`;}
+        else if(b>a){rb=`<div class="rbadge rv">✅ ${e2.n} gana</div>`;if(per1||per2)ph=`<div class="pesos">${per2?`<span class="pg">+$10 ${per2}</span>`:'<span></span>'}${per1?`<span class="pp2">-$10 ${per1}</span>`:'<span></span>'}</div>`;}
+        else rb=`<div class="rbadge rem">🤝 Empate — sin pago</div>`;
+      }else rb=`<div class="rbadge rp">⏳ ${p.h} CDMX</div>`;
+      const sc=j?`<span class="marcador">${p.g1} - ${p.g2}</span>`:`<span class="marcador" style="font-size:13px;color:rgba(255,255,255,.3)">vs</span>`;
+      html+=`<div class="pcard">
+        <div class="pfecha"><span>Grupo ${p.g}</span><span class="phora">${p.h} CDMX</span></div>
+        <div class="peqs">
+          <div class="eblk"><span class="eflag">${e1.flag}</span><div class="ename">${e1.n}</div><div class="epersona ${per1?'tiene':''}">${per1||'—'}</div></div>
+          ${sc}
+          <div class="eblk"><span class="eflag">${e2.flag}</span><div class="ename">${e2.n}</div><div class="epersona ${per2?'tiene':''}">${per2||'—'}</div></div>
+        </div>${rb}${ph}</div>`;
+    });
+  });
+  pl.innerHTML=html;
+}
+
+function setFG(g){filtroG=g;renderPartidos();}
+
+function renderD16(){
+  const dl=document.getElementById('dlist');if(!dl)return;
+  const porFecha={};
+  D16.forEach(p=>{
+    if(!porFecha[p.f])porFecha[p.f]=[];
+    porFecha[p.f].push(p);
+  });
+  let html='';
+  Object.entries(porFecha).forEach(([fecha,ps])=>{
+    html+=`<div class="fecha-sep">${fecha}</div>`;
+    ps.forEach(p=>{
+      const e1=eqI(p.e1),e2=eqI(p.e2),per1=perDe(p.e1),per2=perDe(p.e2);
+      const j=p.g1!==null&&p.g2!==null;
+      let rb='',ph='';
+      if(j){
+        const a=parseInt(p.g1),b=parseInt(p.g2);
+        let ganador=null;
+        if(a>b) ganador=p.e1;
+        else if(b>a) ganador=p.e2;
+        else if(p.pen) ganador=(p.pen[0]>p.pen[1])?p.e1:p.e2;
+        if(ganador===p.e1){rb=`<div class="rbadge rv">✅ ${e1.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per1?`<span class="pg">+$10 ${per1}</span>`:'<span></span>'}${per2?`<span class="pp2">-$10 ${per2}</span>`:'<span></span>'}</div>`;}
+        else if(ganador===p.e2){rb=`<div class="rbadge rv">✅ ${e2.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per2?`<span class="pg">+$10 ${per2}</span>`:'<span></span>'}${per1?`<span class="pp2">-$10 ${per1}</span>`:'<span></span>'}</div>`;}
+        else rb=`<div class="rbadge rem">⏳ Empate — esperando penales</div>`;
+      }else rb=`<div class="rbadge rp">⏳ ${p.h} CDMX</div>`;
+      const sc=j?(p.pen?`<span class="marcador">${p.g1}<span style="font-size:13px">(${p.pen[0]})</span> - ${p.g2}<span style="font-size:13px">(${p.pen[1]})</span></span>`:`<span class="marcador">${p.g1} - ${p.g2}</span>`):`<span class="marcador" style="font-size:13px;color:rgba(255,255,255,.3)">vs</span>`;
+      html+=`<div class="pcard">
+        <div class="pfecha"><span>Dieciseisavos</span><span class="phora">${p.h} CDMX</span></div>
+        <div class="peqs">
+          <div class="eblk"><span class="eflag">${e1.flag}</span><div class="ename">${e1.n}</div><div class="epersona ${per1?'tiene':''}">${per1||'—'}</div></div>
+          ${sc}
+          <div class="eblk"><span class="eflag">${e2.flag}</span><div class="ename">${e2.n}</div><div class="epersona ${per2?'tiene':''}">${per2||'—'}</div></div>
+        </div>${rb}${ph}</div>`;
+    });
+  });
+  dl.innerHTML=html;
+}
+
+function renderTabla(){
+  const tb=document.getElementById('tbody');if(!tb)return;
+  const sal={};PERSONAS.forEach(p=>sal[p]={v:0,d:0,s:0});
+  partidos.forEach(p=>{
+    if(p.g1===null||p.g2===null)return;
+    const a=parseInt(p.g1),b=parseInt(p.g2);if(a===b)return;
+    const p1=perDe(p.e1),p2=perDe(p.e2);
+    const gan=a>b?p1:p2,per=a>b?p2:p1;
+    if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
+    if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
+  });
+  D16.forEach(p=>{
+    if(p.g1===null||p.g2===null)return;
+    const a=parseInt(p.g1),b=parseInt(p.g2);
+    let ganE=null,perE=null;
+    if(a>b){ganE=p.e1;perE=p.e2;}
+    else if(b>a){ganE=p.e2;perE=p.e1;}
+    else if(p.pen){ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;perE=(ganE===p.e1)?p.e2:p.e1;}
+    else return; // sin definir aún
+    const gan=perDe(ganE),per=perDe(perE);
+    if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
+    if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
+  });
+  const sorted=PERSONAS.map(p=>({p,...sal[p]})).sort((a,b)=>b.s-a.s||b.v-a.v);
+  tb.innerHTML=sorted.map((r,i)=>{
+    const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
+    const rc=r.s>0?'gana':r.s<0?'perd':'';
+    const sc=r.s>=0?'sp2':'sn3';
+    const esN=NINOS.has(r.p);
+    const eqs=(SORTEO[r.p]||[]).map(id=>{const eq=eqI(id);return`<span class="eq-chip">${eq.flag} ${eq.n}</span>`;}).join('');
+    return`<div class="trow ${rc}">
+      <div class="trow-top">
+        <span class="pbadge ${pc}">${i+1}</span>
+        <span class="tname">${r.p}${esN?'<span class="ntag">niño</span>':''}</span>
+        <span style="text-align:center;color:#4ade80;font-size:12px">${r.v}</span>
+        <span style="text-align:center;color:#f87171;font-size:12px">${r.d}</span>
+        <span class="${sc}" style="text-align:right;font-size:12px">${r.s>=0?'+':''}$${r.s}</span>
+      </div>
+      <div class="eq-chips">${eqs}</div>
+    </div>`;
+  }).join('');
+}
+
+function showTab(t){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  const sec=document.getElementById('tab-'+t);if(sec)sec.classList.add('active');
+  const btn=document.querySelector(`[onclick="showTab('${t}')"]`);if(btn)btn.classList.add('active');
+}
+
+// ── INICIO — cargar resultados del KV centralizado ──
+(async()=>{
+  try{
+    const resp=await fetch(WORKER);
+    const kv=await resp.json();
+    Object.entries(kv).forEach(([id,m])=>{
+      const p=partidos.find(x=>x.id===parseInt(id)) || D16.find(x=>x.id===parseInt(id));
+      if(p&&Array.isArray(m)){p.g1=m[0];p.g2=m[1];if(m[2]&&Array.isArray(m[2]))p.pen=m[2];}
+    });
+  }catch(e){console.error('Error cargando KV:',e);}
+  renderSorteo();
+  renderPartidos();
+  renderD16();
+  renderTabla();
+})();
+</script>
+</body>
+</html>
