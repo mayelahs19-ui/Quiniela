@@ -60,6 +60,9 @@ body{font-family:'Nunito',sans-serif;background:#06123a;min-height:100vh;overflo
 .trow{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;margin-bottom:7px;}
 .trow.gana{border-left:3px solid #4ade80;background:rgba(74,222,128,.07);}
 .trow.perd{border-left:3px solid #f87171;background:rgba(248,113,113,.07);}
+.trow.elim{border-left:3px solid rgba(255,255,255,.2);background:rgba(255,255,255,.02);opacity:.55;}
+.elimtag{font-size:9px;background:rgba(248,113,113,.25);color:#f87171;border-radius:3px;padding:1px 5px;font-weight:700;}
+.eq-fuera{opacity:.4;text-decoration:line-through;}
 .trow-top{display:grid;grid-template-columns:24px 1fr 34px 34px 54px;gap:3px;align-items:center;margin-bottom:8px;}
 .pbadge{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.1);font-size:10px;font-weight:700;text-align:center;line-height:20px;color:rgba(255,255,255,.6);}
 .p1{background:#FFD700;color:#5a4000;}.p2{background:#C0C0C0;color:#333;}.p3{background:#CD7F32;color:#fff;}
@@ -84,13 +87,17 @@ body{font-family:'Nunito',sans-serif;background:#06123a;min-height:100vh;overflo
 </div>
 <div class="tabs">
   <button class="tab active" onclick="showTab('s')">⚽ Sorteo</button>
-  <button class="tab" onclick="showTab('p')">🗓 Partidos</button>
+  <button class="tab" onclick="showTab('p')">🗓 Grupos</button>
+  <button class="tab" onclick="showTab('d')">🏟 16avos</button>
   <button class="tab" onclick="showTab('t')">🏆 Tabla</button>
 </div>
 <div id="tab-s" class="sec active"><div class="sgrid" id="sgrid"></div></div>
 <div id="tab-p" class="sec">
   <div class="fbrow" id="fgrp"></div>
   <div id="plist"><div class="loading">Cargando resultados...</div></div>
+</div>
+<div id="tab-d" class="sec">
+  <div id="dlist"><div class="loading">Cargando dieciseisavos...</div></div>
 </div>
 <div id="tab-t" class="sec">
   <div class="thdr"><span>#</span><span>Nombre</span><span style="text-align:center">V</span><span style="text-align:center">D</span><span style="text-align:right">Saldo</span></div>
@@ -209,6 +216,26 @@ const PB=[
   {id:60,f:"Jun 27",h:"20:00",e1:"JOR",e2:"ARG",g:"J",g1:null,g2:null},
 ];
 
+// ── DIECISEISAVOS DE FINAL — 28 jun al 3 jul, horarios CDMX ──
+const D16=[
+  {id:73,f:"Jun 28",h:"13:00",e1:"CAN",e2:"RSA",g1:1,g2:0},
+  {id:76,f:"Jun 29",h:"11:00",e1:"BRA",e2:"JPN",g1:null,g2:null},
+  {id:74,f:"Jun 29",h:"15:30",e1:"GER",e2:"PAR",g1:null,g2:null},
+  {id:75,f:"Jun 29",h:"20:00",e1:"NED",e2:"MAR",g1:null,g2:null},
+  {id:78,f:"Jun 30",h:"12:00",e1:"CIV",e2:"NOR",g1:null,g2:null},
+  {id:77,f:"Jun 30",h:"16:00",e1:"FRA",e2:"SWE",g1:null,g2:null},
+  {id:79,f:"Jun 30",h:"20:00",e1:"MEX",e2:"ECU",g1:null,g2:null},
+  {id:80,f:"Jul 1", h:"11:00",e1:"ENG",e2:"COD",g1:null,g2:null},
+  {id:84,f:"Jul 2", h:"14:00",e1:"ESP",e2:"AUT",g1:null,g2:null},
+  {id:82,f:"Jul 2", h:"15:00",e1:"BEL",e2:"SEN",g1:null,g2:null},
+  {id:83,f:"Jul 2", h:"18:00",e1:"POR",e2:"CRO",g1:null,g2:null},
+  {id:81,f:"Jul 2", h:"19:00",e1:"USA",e2:"BIH",g1:null,g2:null},
+  {id:85,f:"Jul 2", h:"22:00",e1:"SUI",e2:"ALG",g1:null,g2:null},
+  {id:88,f:"Jul 3", h:"13:00",e1:"AUS",e2:"EGY",g1:null,g2:null},
+  {id:86,f:"Jul 3", h:"17:00",e1:"ARG",e2:"CPV",g1:null,g2:null},
+  {id:87,f:"Jul 3", h:"20:30",e1:"COL",e2:"GHA",g1:null,g2:null},
+];
+
 const WORKER = 'https://quiniela-proxy.mayelahs19.workers.dev/kv';
 
 const SORTEO = {
@@ -229,6 +256,35 @@ function eqI(id){return EQ.find(e=>e.id===id)||{flag:'',n:id};}
 function perDe(id){
   for(const[p,eqs]of Object.entries(SORTEO))if(eqs.includes(id))return p;
   return null;
+}
+
+// Equipos que clasificaron a dieciseisavos (aparecen en D16)
+function equiposClasificados(){
+  const s=new Set();
+  D16.forEach(p=>{s.add(p.e1);s.add(p.e2);});
+  return s;
+}
+
+// ¿Este equipo ya quedó eliminado del torneo?
+function equipoEliminado(id){
+  const clasificados=equiposClasificados();
+  if(!clasificados.has(id)) return true; // no llegó a dieciseisavos
+  // Si llegó a dieciseisavos, revisar si ya perdió su partido
+  const partido=D16.find(p=>p.e1===id||p.e2===id);
+  if(!partido||partido.g1===null||partido.g2===null) return false; // aún no juega o no hay resultado
+  const a=parseInt(partido.g1),b=parseInt(partido.g2);
+  let ganador=null;
+  if(a>b) ganador=partido.e1;
+  else if(b>a) ganador=partido.e2;
+  else if(partido.pen) ganador=(partido.pen[0]>partido.pen[1])?partido.e1:partido.e2;
+  return ganador!==null && ganador!==id;
+}
+
+// ¿Esta persona ya quedó eliminada? (TODOS sus equipos fuera)
+function personaEliminada(persona){
+  const eqs=SORTEO[persona]||[];
+  if(eqs.length===0) return false;
+  return eqs.every(id=>equipoEliminado(id));
 }
 
 function renderSorteo(){
@@ -284,6 +340,43 @@ function renderPartidos(){
 
 function setFG(g){filtroG=g;renderPartidos();}
 
+function renderD16(){
+  const dl=document.getElementById('dlist');if(!dl)return;
+  const porFecha={};
+  D16.forEach(p=>{
+    if(!porFecha[p.f])porFecha[p.f]=[];
+    porFecha[p.f].push(p);
+  });
+  let html='';
+  Object.entries(porFecha).forEach(([fecha,ps])=>{
+    html+=`<div class="fecha-sep">${fecha}</div>`;
+    ps.forEach(p=>{
+      const e1=eqI(p.e1),e2=eqI(p.e2),per1=perDe(p.e1),per2=perDe(p.e2);
+      const j=p.g1!==null&&p.g2!==null;
+      let rb='',ph='';
+      if(j){
+        const a=parseInt(p.g1),b=parseInt(p.g2);
+        let ganador=null;
+        if(a>b) ganador=p.e1;
+        else if(b>a) ganador=p.e2;
+        else if(p.pen) ganador=(p.pen[0]>p.pen[1])?p.e1:p.e2;
+        if(ganador===p.e1){rb=`<div class="rbadge rv">✅ ${e1.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per1?`<span class="pg">+$10 ${per1}</span>`:'<span></span>'}${per2?`<span class="pp2">-$10 ${per2}</span>`:'<span></span>'}</div>`;}
+        else if(ganador===p.e2){rb=`<div class="rbadge rv">✅ ${e2.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per2?`<span class="pg">+$10 ${per2}</span>`:'<span></span>'}${per1?`<span class="pp2">-$10 ${per1}</span>`:'<span></span>'}</div>`;}
+        else rb=`<div class="rbadge rem">⏳ Empate — esperando penales</div>`;
+      }else rb=`<div class="rbadge rp">⏳ ${p.h} CDMX</div>`;
+      const sc=j?(p.pen?`<span class="marcador">${p.g1}<span style="font-size:13px">(${p.pen[0]})</span> - ${p.g2}<span style="font-size:13px">(${p.pen[1]})</span></span>`:`<span class="marcador">${p.g1} - ${p.g2}</span>`):`<span class="marcador" style="font-size:13px;color:rgba(255,255,255,.3)">vs</span>`;
+      html+=`<div class="pcard">
+        <div class="pfecha"><span>Dieciseisavos</span><span class="phora">${p.h} CDMX</span></div>
+        <div class="peqs">
+          <div class="eblk"><span class="eflag">${e1.flag}</span><div class="ename">${e1.n}</div><div class="epersona ${per1?'tiene':''}">${per1||'—'}</div></div>
+          ${sc}
+          <div class="eblk"><span class="eflag">${e2.flag}</span><div class="ename">${e2.n}</div><div class="epersona ${per2?'tiene':''}">${per2||'—'}</div></div>
+        </div>${rb}${ph}</div>`;
+    });
+  });
+  dl.innerHTML=html;
+}
+
 function renderTabla(){
   const tb=document.getElementById('tbody');if(!tb)return;
   const sal={};PERSONAS.forEach(p=>sal[p]={v:0,d:0,s:0});
@@ -295,17 +388,34 @@ function renderTabla(){
     if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
     if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
   });
+  D16.forEach(p=>{
+    if(p.g1===null||p.g2===null)return;
+    const a=parseInt(p.g1),b=parseInt(p.g2);
+    let ganE=null,perE=null;
+    if(a>b){ganE=p.e1;perE=p.e2;}
+    else if(b>a){ganE=p.e2;perE=p.e1;}
+    else if(p.pen){ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;perE=(ganE===p.e1)?p.e2:p.e1;}
+    else return; // sin definir aún
+    const gan=perDe(ganE),per=perDe(perE);
+    if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
+    if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
+  });
   const sorted=PERSONAS.map(p=>({p,...sal[p]})).sort((a,b)=>b.s-a.s||b.v-a.v);
   tb.innerHTML=sorted.map((r,i)=>{
     const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
-    const rc=r.s>0?'gana':r.s<0?'perd':'';
+    const elim=personaEliminada(r.p);
+    const rc=elim?'elim':(r.s>0?'gana':r.s<0?'perd':'');
     const sc=r.s>=0?'sp2':'sn3';
     const esN=NINOS.has(r.p);
-    const eqs=(SORTEO[r.p]||[]).map(id=>{const eq=eqI(id);return`<span class="eq-chip">${eq.flag} ${eq.n}</span>`;}).join('');
+    const eqs=(SORTEO[r.p]||[]).map(id=>{
+      const eq=eqI(id);
+      const fuera=equipoEliminado(id);
+      return`<span class="eq-chip ${fuera?'eq-fuera':''}">${eq.flag} ${eq.n}${fuera?' ❌':''}</span>`;
+    }).join('');
     return`<div class="trow ${rc}">
       <div class="trow-top">
         <span class="pbadge ${pc}">${i+1}</span>
-        <span class="tname">${r.p}${esN?'<span class="ntag">niño</span>':''}</span>
+        <span class="tname">${r.p}${esN?'<span class="ntag">niño</span>':''}${elim?'<span class="elimtag">❌ Eliminado</span>':''}</span>
         <span style="text-align:center;color:#4ade80;font-size:12px">${r.v}</span>
         <span style="text-align:center;color:#f87171;font-size:12px">${r.d}</span>
         <span class="${sc}" style="text-align:right;font-size:12px">${r.s>=0?'+':''}$${r.s}</span>
@@ -328,12 +438,13 @@ function showTab(t){
     const resp=await fetch(WORKER);
     const kv=await resp.json();
     Object.entries(kv).forEach(([id,m])=>{
-      const p=partidos.find(x=>x.id===parseInt(id));
-      if(p&&Array.isArray(m)){p.g1=m[0];p.g2=m[1];}
+      const p=partidos.find(x=>x.id===parseInt(id)) || D16.find(x=>x.id===parseInt(id));
+      if(p&&Array.isArray(m)){p.g1=m[0];p.g2=m[1];if(m[2]&&Array.isArray(m[2]))p.pen=m[2];}
     });
   }catch(e){console.error('Error cargando KV:',e);}
   renderSorteo();
   renderPartidos();
+  renderD16();
   renderTabla();
 })();
 </script>
