@@ -85,11 +85,15 @@ body{font-family:'Nunito',sans-serif;background:#06123a;min-height:100vh;overflo
   <h1>Quiniela Familia Hernandez Sanchez 2026</h1>
   <p>22 participantes · $100 entrada · $10 por partido · FIFA World Cup 2026</p>
 </div>
-<div class="tabs">
+<div class="tabs" style="flex-wrap:wrap;">
   <button class="tab active" onclick="showTab('s')">⚽ Sorteo</button>
   <button class="tab" onclick="showTab('p')">🗓 Grupos</button>
   <button class="tab" onclick="showTab('d')">🏟 16avos</button>
-  <button class="tab" onclick="showTab('t')">🏆 Tabla</button>
+  <button class="tab" onclick="showTab('o')">⚡ 8vos</button>
+  <button class="tab" onclick="showTab('c')">🔥 4tos</button>
+  <button class="tab" onclick="showTab('sf')">🌟 Semis</button>
+  <button class="tab" onclick="showTab('f')">🏆 Final</button>
+  <button class="tab" onclick="showTab('t')">📊 Tabla</button>
 </div>
 <div id="tab-s" class="sec active"><div class="sgrid" id="sgrid"></div></div>
 <div id="tab-p" class="sec">
@@ -98,6 +102,18 @@ body{font-family:'Nunito',sans-serif;background:#06123a;min-height:100vh;overflo
 </div>
 <div id="tab-d" class="sec">
   <div id="dlist"><div class="loading">Cargando dieciseisavos...</div></div>
+</div>
+<div id="tab-o" class="sec">
+  <div id="olist"><div class="loading">Cargando octavos...</div></div>
+</div>
+<div id="tab-c" class="sec">
+  <div id="clist"><div class="loading">Cargando cuartos...</div></div>
+</div>
+<div id="tab-sf" class="sec">
+  <div id="sflist"><div class="loading">Cargando semifinales...</div></div>
+</div>
+<div id="tab-f" class="sec">
+  <div id="flist"><div class="loading">Cargando final...</div></div>
 </div>
 <div id="tab-t" class="sec">
   <div class="thdr"><span>#</span><span>Nombre</span><span style="text-align:center">V</span><span style="text-align:center">D</span><span style="text-align:right">Saldo</span></div>
@@ -236,6 +252,38 @@ const D16=[
   {id:87,f:"Jul 3", h:"20:30",e1:"COL",e2:"GHA",g1:null,g2:null},
 ];
 
+// ── OCTAVOS DE FINAL — 4 al 7 de julio, horarios CDMX ──
+const OCT=[
+  {id:89,f:"Jul 4", h:"15:00",e1:"PAR",e2:"FRA",g1:null,g2:null},
+  {id:90,f:"Jul 4", h:"11:00",e1:"CAN",e2:"MAR",g1:null,g2:null},
+  {id:91,f:"Jul 5", h:"14:00",e1:"BRA",e2:"NOR",g1:null,g2:null},
+  {id:92,f:"Jul 5", h:"18:00",e1:"MEX",e2:"ENG",g1:null,g2:null},
+  {id:93,f:"Jul 6", h:"13:00",e1:"POR",e2:"ESP",g1:null,g2:null},
+  {id:94,f:"Jul 6", h:"18:00",e1:"USA",e2:"BEL",g1:null,g2:null},
+  {id:95,f:"Jul 7", h:"10:00",e1:"ARG",e2:"EGY",g1:null,g2:null},
+  {id:96,f:"Jul 7", h:"14:00",e1:"SUI",e2:"COL",g1:null,g2:null},
+];
+
+// ── CUARTOS DE FINAL — 9 al 11 de julio, horarios CDMX ──
+const CUA=[
+  {id:97,f:"Jul 9", h:"14:00",e1:"G89",e2:"G90",g1:null,g2:null},
+  {id:98,f:"Jul 9", h:"13:00",e1:"G93",e2:"G94",g1:null,g2:null},
+  {id:99,f:"Jul 10",h:"15:00",e1:"G91",e2:"G92",g1:null,g2:null},
+  {id:100,f:"Jul 10",h:"19:00",e1:"G95",e2:"G96",g1:null,g2:null},
+];
+
+// ── SEMIFINALES — 14 y 15 de julio, horarios CDMX ──
+const SEM=[
+  {id:101,f:"Jul 14",h:"13:00",e1:"G97",e2:"G98",g1:null,g2:null},
+  {id:102,f:"Jul 15",h:"13:00",e1:"G99",e2:"G100",g1:null,g2:null},
+];
+
+// ── TERCER LUGAR Y FINAL — 18 y 19 de julio, horarios CDMX ──
+const FIN=[
+  {id:103,f:"Jul 18",h:"15:00",e1:"P101",e2:"P102",g1:null,g2:null},
+  {id:104,f:"Jul 19",h:"13:00",e1:"G101",e2:"G102",g1:null,g2:null},
+];
+
 const WORKER = 'https://quiniela-proxy.mayelahs19.workers.dev/kv';
 
 const SORTEO = {
@@ -261,17 +309,21 @@ function perDe(id){
 // Equipos que clasificaron a dieciseisavos (aparecen en D16)
 function equiposClasificados(){
   const s=new Set();
-  D16.forEach(p=>{s.add(p.e1);s.add(p.e2);});
+  [...D16,...OCT,...CUA,...SEM,...FIN].forEach(p=>{
+    if(!p.e1.startsWith('G')&&!p.e1.startsWith('P')) s.add(p.e1);
+    if(!p.e2.startsWith('G')&&!p.e2.startsWith('P')) s.add(p.e2);
+  });
   return s;
 }
 
 // ¿Este equipo ya quedó eliminado del torneo?
 function equipoEliminado(id){
   const clasificados=equiposClasificados();
-  if(!clasificados.has(id)) return true; // no llegó a dieciseisavos
-  // Si llegó a dieciseisavos, revisar si ya perdió su partido
-  const partido=D16.find(p=>p.e1===id||p.e2===id);
-  if(!partido||partido.g1===null||partido.g2===null) return false; // aún no juega o no hay resultado
+  if(!clasificados.has(id)) return true;
+  // Buscar su partido en cualquier ronda
+  const todas=[...D16,...OCT,...CUA,...SEM,...FIN];
+  const partido=todas.find(p=>p.e1===id||p.e2===id);
+  if(!partido||partido.g1===null||partido.g2===null) return false;
   const a=parseInt(partido.g1),b=parseInt(partido.g2);
   let ganador=null;
   if(a>b) ganador=partido.e1;
@@ -340,10 +392,30 @@ function renderPartidos(){
 
 function setFG(g){filtroG=g;renderPartidos();}
 
-function renderD16(){
-  const dl=document.getElementById('dlist');if(!dl)return;
+function renderRonda(arr, elId, titulo){
+  const dl=document.getElementById(elId);if(!dl)return;
+  // Resolver nombres de equipos (pueden ser "G89", "P101", etc.)
+  function resolverEq(code){
+    if(!code.startsWith('G')&&!code.startsWith('P')) return eqI(code);
+    const pid=parseInt(code.slice(1));
+    const todas=[...D16,...OCT,...CUA,...SEM,...FIN];
+    const p=todas.find(x=>x.id===pid);
+    if(!p||p.g1===null) return {flag:'❓',n:code==='G'+pid?'Clasificado '+pid:'Perdedor '+pid};
+    const a=parseInt(p.g1),b=parseInt(p.g2);
+    let ganE=null;
+    if(code.startsWith('G')){
+      if(a>b) ganE=p.e1;
+      else if(b>a) ganE=p.e2;
+      else if(p.pen) ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;
+    } else {
+      if(a>b) ganE=p.e2;
+      else if(b>a) ganE=p.e1;
+      else if(p.pen) ganE=(p.pen[0]>p.pen[1])?p.e2:p.e1;
+    }
+    return ganE?eqI(ganE):{flag:'❓',n:'Por definir'};
+  }
   const porFecha={};
-  D16.forEach(p=>{
+  arr.forEach(p=>{
     if(!porFecha[p.f])porFecha[p.f]=[];
     porFecha[p.f].push(p);
   });
@@ -351,7 +423,8 @@ function renderD16(){
   Object.entries(porFecha).forEach(([fecha,ps])=>{
     html+=`<div class="fecha-sep">${fecha}</div>`;
     ps.forEach(p=>{
-      const e1=eqI(p.e1),e2=eqI(p.e2),per1=perDe(p.e1),per2=perDe(p.e2);
+      const e1=resolverEq(p.e1),e2=resolverEq(p.e2);
+      const per1=perDe(p.e1),per2=perDe(p.e2);
       const j=p.g1!==null&&p.g2!==null;
       let rb='',ph='';
       if(j){
@@ -360,13 +433,18 @@ function renderD16(){
         if(a>b) ganador=p.e1;
         else if(b>a) ganador=p.e2;
         else if(p.pen) ganador=(p.pen[0]>p.pen[1])?p.e1:p.e2;
-        if(ganador===p.e1){rb=`<div class="rbadge rv">✅ ${e1.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per1?`<span class="pg">+$10 ${per1}</span>`:'<span></span>'}${per2?`<span class="pp2">-$10 ${per2}</span>`:'<span></span>'}</div>`;}
-        else if(ganador===p.e2){rb=`<div class="rbadge rv">✅ ${e2.n} avanza</div>`;if(per1||per2)ph=`<div class="pesos">${per2?`<span class="pg">+$10 ${per2}</span>`:'<span></span>'}${per1?`<span class="pp2">-$10 ${per1}</span>`:'<span></span>'}</div>`;}
-        else rb=`<div class="rbadge rem">⏳ Empate — esperando penales</div>`;
-      }else rb=`<div class="rbadge rp">⏳ ${p.h} CDMX</div>`;
+        const ganNom=ganador===p.e1?e1.n:e2.n;
+        const perNom=ganador===p.e1?e2.n:e1.n;
+        const perGan=ganador===p.e1?per1:per2;
+        const perPer=ganador===p.e1?per2:per1;
+        if(ganador){
+          rb=`<div class="rbadge rv">✅ ${ganNom} avanza</div>`;
+          if(perGan||perPer)ph=`<div class="pesos">${perGan?`<span class="pg">+$10 ${perGan}</span>`:'<span></span>'}${perPer?`<span class="pp2">-$10 ${perPer}</span>`:'<span></span>'}</div>`;
+        } else rb=`<div class="rbadge rem">⏳ Empate — esperando penales</div>`;
+      } else rb=`<div class="rbadge rp">⏳ ${p.h} CDMX</div>`;
       const sc=j?(p.pen?`<span class="marcador">${p.g1}<span style="font-size:13px">(${p.pen[0]})</span> - ${p.g2}<span style="font-size:13px">(${p.pen[1]})</span></span>`:`<span class="marcador">${p.g1} - ${p.g2}</span>`):`<span class="marcador" style="font-size:13px;color:rgba(255,255,255,.3)">vs</span>`;
       html+=`<div class="pcard">
-        <div class="pfecha"><span>Dieciseisavos</span><span class="phora">${p.h} CDMX</span></div>
+        <div class="pfecha"><span>${titulo}</span><span class="phora">${p.h} CDMX</span></div>
         <div class="peqs">
           <div class="eblk"><span class="eflag">${e1.flag}</span><div class="ename">${e1.n}</div><div class="epersona ${per1?'tiene':''}">${per1||'—'}</div></div>
           ${sc}
@@ -374,8 +452,14 @@ function renderD16(){
         </div>${rb}${ph}</div>`;
     });
   });
-  dl.innerHTML=html;
+  dl.innerHTML=html||`<div class="loading">Sin partidos definidos aún</div>`;
 }
+
+function renderD16(){ renderRonda(D16,'dlist','Dieciseisavos'); }
+function renderOct(){ renderRonda(OCT,'olist','Octavos de Final'); }
+function renderCua(){ renderRonda(CUA,'clist','Cuartos de Final'); }
+function renderSem(){ renderRonda(SEM,'sflist','Semifinal'); }
+function renderFin(){ renderRonda(FIN,'flist','🏆 Final'); }
 
 function renderTabla(){
   const tb=document.getElementById('tbody');if(!tb)return;
@@ -395,7 +479,21 @@ function renderTabla(){
     if(a>b){ganE=p.e1;perE=p.e2;}
     else if(b>a){ganE=p.e2;perE=p.e1;}
     else if(p.pen){ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;perE=(ganE===p.e1)?p.e2:p.e1;}
-    else return; // sin definir aún
+    else return;
+    const gan=perDe(ganE),per=perDe(perE);
+    if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
+    if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
+  });
+  // Sumar saldos de Octavos, Cuartos, Semis y Final
+  [...OCT,...CUA,...SEM,...FIN].forEach(p=>{
+    if(p.g1===null||p.g2===null)return;
+    const a=parseInt(p.g1),b=parseInt(p.g2);
+    let ganE=null,perE=null;
+    if(a>b){ganE=p.e1;perE=p.e2;}
+    else if(b>a){ganE=p.e2;perE=p.e1;}
+    else if(p.pen){ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;perE=(ganE===p.e1)?p.e2:p.e1;}
+    else return;
+    // Solo contar si el equipo pertenece a alguien del sorteo original
     const gan=perDe(ganE),per=perDe(perE);
     if(gan&&sal[gan]){sal[gan].v++;sal[gan].s+=10;}
     if(per&&sal[per]){sal[per].d++;sal[per].s-=10;}
@@ -438,13 +536,23 @@ function showTab(t){
     const resp=await fetch(WORKER);
     const kv=await resp.json();
     Object.entries(kv).forEach(([id,m])=>{
-      const p=partidos.find(x=>x.id===parseInt(id)) || D16.find(x=>x.id===parseInt(id));
+      const pid=parseInt(id);
+      const p=partidos.find(x=>x.id===pid)
+        || D16.find(x=>x.id===pid)
+        || OCT.find(x=>x.id===pid)
+        || CUA.find(x=>x.id===pid)
+        || SEM.find(x=>x.id===pid)
+        || FIN.find(x=>x.id===pid);
       if(p&&Array.isArray(m)){p.g1=m[0];p.g2=m[1];if(m[2]&&Array.isArray(m[2]))p.pen=m[2];}
     });
   }catch(e){console.error('Error cargando KV:',e);}
   renderSorteo();
   renderPartidos();
   renderD16();
+  renderOct();
+  renderCua();
+  renderSem();
+  renderFin();
   renderTabla();
 })();
 </script>
