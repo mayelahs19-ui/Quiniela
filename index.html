@@ -319,16 +319,20 @@ function equiposClasificados(){
 // ¿Este equipo ya quedó eliminado del torneo?
 function equipoEliminado(id){
   const clasificados=equiposClasificados();
-  if(!clasificados.has(id)) return true;
-  // Buscar su partido en cualquier ronda
+  if(!clasificados.has(id)) return true; // no clasificó a dieciseisavos
+  // Buscar TODOS los partidos del equipo en rondas eliminatorias
   const todas=[...D16,...OCT,...CUA,...SEM,...FIN];
-  const partido=todas.find(p=>p.e1===id||p.e2===id);
-  if(!partido||partido.g1===null||partido.g2===null) return false;
-  const a=parseInt(partido.g1),b=parseInt(partido.g2);
+  const partidos_eq=todas.filter(p=>p.e1===id||p.e2===id);
+  // Si no tiene partidos o ninguno está jugado, no eliminado aún
+  const jugados=partidos_eq.filter(p=>p.g1!==null&&p.g2!==null);
+  if(jugados.length===0) return false;
+  // Revisar el último partido jugado
+  const ultimo=jugados[jugados.length-1];
+  const a=parseInt(ultimo.g1),b=parseInt(ultimo.g2);
   let ganador=null;
-  if(a>b) ganador=partido.e1;
-  else if(b>a) ganador=partido.e2;
-  else if(partido.pen) ganador=(partido.pen[0]>partido.pen[1])?partido.e1:partido.e2;
+  if(a>b) ganador=ultimo.e1;
+  else if(b>a) ganador=ultimo.e2;
+  else if(ultimo.pen) ganador=(ultimo.pen[0]>ultimo.pen[1])?ultimo.e1:ultimo.e2;
   return ganador!==null && ganador!==id;
 }
 
