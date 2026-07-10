@@ -311,7 +311,9 @@ function equiposClasificados(){
   const s=new Set();
   [...D16,...OCT,...CUA,...SEM,...FIN].forEach(p=>{
     if(!p.e1.startsWith('G')&&!p.e1.startsWith('P')) s.add(p.e1);
+    else if(p.e1.length>1&&isNaN(parseInt(p.e1.slice(1)))) s.add(p.e1); // PAR, POR, GHA, GER etc
     if(!p.e2.startsWith('G')&&!p.e2.startsWith('P')) s.add(p.e2);
+    else if(p.e2.length>1&&isNaN(parseInt(p.e2.slice(1)))) s.add(p.e2); // PAR, POR, GHA, GER etc
   });
   return s;
 }
@@ -400,9 +402,11 @@ function renderRonda(arr, elId, titulo){
   const dl=document.getElementById(elId);if(!dl)return;
   // Resolver nombres de equipos (pueden ser "G89", "P101", etc.)
   function resolverEq(code){
-    // Si es código directo de equipo, usar eqI
-    if(!code.startsWith('G')&&!code.startsWith('P')) return eqI(code);
-    // Si aún usa código dinámico, intentar resolver
+    // Código dinámico: empieza con G o P seguido de NÚMEROS (G89, P101)
+    // Código de equipo: PAR, POR, GHA, GER, etc. (letras después de la primera)
+    const isDynamic = (code.startsWith('G')||code.startsWith('P')) && !isNaN(parseInt(code.slice(1)));
+    if(!isDynamic) return eqI(code);
+    // Resolver código dinámico
     const pid=parseInt(code.slice(1));
     const todas=[...D16,...OCT,...CUA,...SEM,...FIN];
     const p=todas.find(x=>x.id===pid);
