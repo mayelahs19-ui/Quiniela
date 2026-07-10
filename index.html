@@ -266,10 +266,10 @@ const OCT=[
 
 // ── CUARTOS DE FINAL — 9 al 11 de julio, horarios CDMX ──
 const CUA=[
-  {id:97,f:"Jul 9", h:"14:00",e1:"G89",e2:"G90",g1:null,g2:null},
-  {id:98,f:"Jul 9", h:"13:00",e1:"G93",e2:"G94",g1:null,g2:null},
-  {id:99,f:"Jul 10",h:"15:00",e1:"G91",e2:"G92",g1:null,g2:null},
-  {id:100,f:"Jul 10",h:"19:00",e1:"G95",e2:"G96",g1:null,g2:null},
+  {id:97,f:"Jul 9", h:"14:00",e1:"FRA",e2:"MAR",g1:null,g2:null},
+  {id:98,f:"Jul 10",h:"13:00",e1:"ESP",e2:"BEL",g1:null,g2:null},
+  {id:99,f:"Jul 11",h:"15:00",e1:"NOR",e2:"ENG",g1:null,g2:null},
+  {id:100,f:"Jul 11",h:"19:00",e1:"ARG",e2:"SUI",g1:null,g2:null},
 ];
 
 // ── SEMIFINALES — 14 y 15 de julio, horarios CDMX ──
@@ -400,11 +400,13 @@ function renderRonda(arr, elId, titulo){
   const dl=document.getElementById(elId);if(!dl)return;
   // Resolver nombres de equipos (pueden ser "G89", "P101", etc.)
   function resolverEq(code){
+    // Si es código directo de equipo, usar eqI
     if(!code.startsWith('G')&&!code.startsWith('P')) return eqI(code);
+    // Si aún usa código dinámico, intentar resolver
     const pid=parseInt(code.slice(1));
     const todas=[...D16,...OCT,...CUA,...SEM,...FIN];
     const p=todas.find(x=>x.id===pid);
-    if(!p||p.g1===null) return {flag:'❓',n:code==='G'+pid?'Clasificado '+pid:'Perdedor '+pid};
+    if(!p||p.g1===null||p.g2===null) return {flag:'⏳',n:'Por definir'};
     const a=parseInt(p.g1),b=parseInt(p.g2);
     let ganE=null;
     if(code.startsWith('G')){
@@ -412,11 +414,11 @@ function renderRonda(arr, elId, titulo){
       else if(b>a) ganE=p.e2;
       else if(p.pen) ganE=(p.pen[0]>p.pen[1])?p.e1:p.e2;
     } else {
-      if(a>b) ganE=p.e2;
-      else if(b>a) ganE=p.e1;
-      else if(p.pen) ganE=(p.pen[0]>p.pen[1])?p.e2:p.e1;
+      if(a<b) ganE=p.e1;
+      else if(b<a) ganE=p.e2;
+      else if(p.pen) ganE=(p.pen[0]<p.pen[1])?p.e1:p.e2;
     }
-    return ganE?eqI(ganE):{flag:'❓',n:'Por definir'};
+    return ganE?eqI(ganE):{flag:'⏳',n:'Por definir'};
   }
   const porFecha={};
   arr.forEach(p=>{
